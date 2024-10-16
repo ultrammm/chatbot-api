@@ -20,7 +20,7 @@ public class ApiTest {
         //封装数据信息
         CloseableHttpClient httpClient= HttpClientBuilder.create().build();
 
-        HttpGet get = new HttpGet("https://api.zsxq.com/v2/groups/28885518425541/topics?scope=by_owner&count=20");
+        HttpGet get = new HttpGet("https://api.zsxq.com/v2/groups/28885518425541/topics?scope=all&count=20");
         get.addHeader("cookie", "zsxq_access_token=BDF9107B-67FF-B439-9CE7-0F1B155B47B0_68197274045DF936; zsxqsessionid=a660efcd61cb7537c3decbdee3bf54f0; abtest_env=product");
         get.addHeader("Content-Type", "application/json, text/plain, */*");
 
@@ -63,5 +63,36 @@ public class ApiTest {
             System.out.println(response.getStatusLine().getStatusCode());
         }
     }
+    @Test
+    public void test_chatgpt() throws IOException {
+        CloseableHttpClient httpClient=HttpClientBuilder.create().build();
 
+        HttpPost post=new HttpPost("https://open.bigmodel.cn/api/paas/v4/chat/completions");
+        post.addHeader("Authorization","Bearer f960726a36c6c2dc66ad73b5b2b74442.GRwRr4aUuFqA3Shd");
+        post.addHeader("Content-Type","application/json");
+
+        String paramJson="{\n" +
+                "    \"model\": \"glm-4\",\n" +
+                "    \"messages\": [\n" +
+                "        {\n" +
+                "            \"role\": \"user\",\n" +
+                "            \"content\": \"帮我写一个java冒泡排序\"\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+
+        StringEntity stringEntity = new StringEntity(paramJson, ContentType.create("text/json", "UTF-8"));
+        post.setEntity(stringEntity);
+
+        CloseableHttpResponse response = httpClient.execute(post);
+
+        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+            String res = EntityUtils.toString(response.getEntity());
+            System.out.println(res);
+        }
+        else {
+            System.out.println(response.getStatusLine().getStatusCode());
+        }
+
+    }
 }
